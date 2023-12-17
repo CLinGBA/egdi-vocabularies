@@ -76,12 +76,12 @@ ORDER BY ?cs`);
     fetch(ENDPOINT + '?query=' + query + '&Accept=application%2Fsparql-results%2Bjson')
                                     
         .then(res => res.json())
-        .then(jsonData => { console.log(jsonData);
+        .then(jsonData => { //console.log(jsonData);
             for (let [key, value] of vocProjects.entries()) {
                 let uri_path = new RegExp(key);
                 jsonData.results.bindings.filter(item => uri_path.test(item.cs.value)).forEach(function (item) {
                     let tc = item.topConcepts.value.split('|'); 
-                    tc.sort();
+                    tc.sort(); //console.log(item);
                     let topConcepts = tc.map(a => `<a href="${BASE}?uri=${a.split('$')[1]}&lang=${USER_LANG}">${a.split('$')[0]}</a>`).join(', ');
                     $('#' + divID).append(`
                     <div class="card bg-light mb-4" style="">
@@ -101,11 +101,12 @@ ORDER BY ?cs`);
                             &nbsp;&nbsp;&nbsp;
                             <strong>Edited by:</strong> ${doiLinks(item.authors.value)}
                             <br>
-                            <strong>Status:</strong> ${doiLinks(item.stat.value.replace('http://purl.org/spar/pso/',''))}
+                            <strong>Status:</strong> <a href="${item.stat.value}">${doiLinks(item.stat.value.replace('http://purl.org/spar/pso/',''))}</a>
                             &nbsp;&nbsp;&nbsp;
                             <strong>Referenced by:</strong> ${doiLinks(item.isRefBy.value)}
                             &nbsp;&nbsp;&nbsp;
-                            <strong>Download:</strong> RDF, TTL,
+                            <strong>Download:</strong> 
+                            <a href="javascript:rdfCS('${item.cs.value}')" title="RDF download">RDF</a>, 
                             <a href="tbl.html?uri=${item.cs.value}" title="table view" target="_blank">HTML</a>
                         </div>
                     </div>`);
@@ -129,6 +130,28 @@ function doiLinks(a) {
         .map(a => a.includes('orcid') ? `<a href="${a}" target="_blank">ORCID</a>` : a)
         .join(', ')
     }
+}
+
+function rdfCS(v) { //create concept scheme RDF for download IN PROGRESS
+    $('#other_desc').append(`<form id="irdfForm" target="_blank" style="display:none;" method="post" action="${ENDPOINT}">
+                            <input type="hidden" name="query" id="irdfQuery"/>
+                            </form>`);
+    document.getElementById('irdfQuery').value = `PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+                CONSTRUCT {?s ?p ?o} 
+                WHERE {
+                select distinct ?s ?p ?o
+                where { 
+                VALUES ?v {<${v}>} #a skos:ConceptScheme
+                ?v skos:hasTopConcept ?tc . ?tc skos:narrower* ?n
+                    {?v ?p ?o BIND(?v as ?s)}
+                    UNION
+                    {?tc ?p ?o BIND(?tc as ?s)}
+                    UNION
+                    {?n ?p ?o BIND(?n as ?s)}
+                } 
+                }`;
+//"CONSTRUCT {?s ?p ?o} WHERE {VALUES ?s {" + v + "} ?s ?p ?o}";
+    document.getElementById('irdfForm').submit();
 }
 
 //***********************set the input box for concept search****************************************
@@ -391,25 +414,7 @@ function rdfTS(v) { //create RDF narrowers for download
     document.getElementById('irdfForm').submit();
 }
 
-function rdfCS(v) { //create concept scheme RDF for download IN PROGRESS
-    document.getElementById('irdfQuery').value = `CONSTRUCT {?s ?p ?o} 
-                WHERE {select distinct ?s ?p ?o
-                where {
-                {?s ?p ?o1
-                FILTER(regex(STR(?s), 'https://data.geoscience.earth/ncl/geoera/graph/lithology'))
-                BIND(?o1 as ?o)}
-                UNION
-                {?o1 ?p ?o 
-                MINUS {?o1 <http://purl.org/vocab/changeset/schema#subjectOfChange> ?o}
-                MINUS {?o1 <http://schema.semantic-web.at/ppt/history#newUri> ?o}
-                MINUS {?o1 <http://schema.semantic-web.at/ppt/history#relatedResource> ?o}
-                FILTER(regex(STR(?o), 'https://data.geoscience.earth/ncl/geoera/graph/lithology'))
-                BIND(?o1 as ?s)}
-                }
-                }`;
-//"CONSTRUCT {?s ?p ?o} WHERE {VALUES ?s {" + v + "} ?s ?p ?o}";
-    document.getElementById('irdfForm').submit();
-}
+
 
 //************set the "details page" to view a single concept ***********************************************************************
 
