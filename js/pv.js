@@ -85,7 +85,7 @@ ORDER BY ?cs`);
                     let topConcepts = tc.map(a => `<a href="${BASE}?uri=${a.split('$')[1]}&lang=${USER_LANG}">${a.split('$')[0]}</a>`).join(', ');
                     $('#' + divID).append(`
                     <div class="card bg-light mb-4" style="">
-                        <div class="card-body" style="font-size: 1rem; background: GhostWhite;">
+                        <div class="card-body" style="font-size: 1rem; background: #f8f8f8;">
                             <h4><strong>${item.csl.value}</strong> (${value.acronym})</h4>
                         
                             <div style="">
@@ -97,13 +97,13 @@ ORDER BY ?cs`);
                             <strong>Concepts:</strong> ${item.count.value}
                             ${(item.new.value!=item.count.value)?('('+ (parseInt(item.count.value) - parseInt(item.new.value)) + ' reused)'):''}
                             &nbsp;&nbsp;&nbsp;
-                            <strong>Created:</strong> ${item.date.value.split('T')[0]}
+                            <strong><a href="http://purl.org/dc/terms/issued">Issued:</a></strong> ${item.date.value.split('T')[0]}
                             &nbsp;&nbsp;&nbsp;
-                            <strong>Edited by:</strong> ${doiLinks(item.authors.value)}
+                            <strong><a href="https://www.w3.org/TR/prov-o/#qualifiedAttribution">Edited by:</a></strong> ${doiLinks(item.authors.value)}
                             <br>
-                            <strong>Status:</strong> <a href="${item.stat.value}">${doiLinks(item.stat.value.replace('http://purl.org/spar/pso/',''))}</a>
+                            <strong><a href="http://www.w3.org/ns/adms#status">Status:</a></strong> <a href="${item.stat.value}">${doiLinks(item.stat.value.replace('http://purl.org/spar/pso/',''))}</a>
                             &nbsp;&nbsp;&nbsp;
-                            <strong>Referenced by:</strong> ${doiLinks(item.isRefBy.value)}
+                            <strong><a href="http://purl.org/dc/terms/isReferencedBy">Referenced by:</a></strong> ${doiLinks(item.isRefBy.value)}
                             &nbsp;&nbsp;&nbsp;
                             <strong>Download:</strong> 
                             <a href="javascript:rdfCS('${item.cs.value}')" title="RDF download">RDF</a>, 
