@@ -39,8 +39,8 @@ $(document).ready(function () {
 
 function insertPageDesc() {
 
-    $('#page_desc').append(`<br><h1 id="title"><span style="color: lightgray;">EGDI</span> Vocabularies&nbsp;&nbsp;<img src="img/egdi.png" style="height: 40px;"></h1>`);
-    $('#page_desc').append('<h5>European Geological Data Infrastructure</h5>');
+    $('#page_desc').append(`<br><h1 id="title"><span style="color: lightgray;">project</span> Vocabularies</h1>`);//&nbsp;&nbsp;<img src="img/egdi.png" style="height: 40px;"></h1>`);
+    $('#page_desc').append('<h5>EGDI - European Geological Data Infrastructure</h5>');
     $('#page_desc').append(`<p>project-specific, created during the project, scientific knowledge concepts, 
     used to annotate datasets and webservices, semantically modeled, downloadable/reusable RDF files, published as Linked Open Data, 
     and possibly drafts for future standards</p>`);
